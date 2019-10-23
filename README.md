@@ -20,43 +20,89 @@ java -jar build/libs/*.jar
 
 ## Description
 
-At this stage, the service API always return the same quiz to be solved. 
-The quiz has a title, text and four options. The correct answer is third.
+At this stage, the service API supports creating, getting, and solving quizzes.
+Each quiz has an id, title, text, some options and only one correct answer.
+The answer is not returned in the API.
 
 ## Operations and their results
 
 The following are examples of all supported requests and responses using `curl`.
 
-### Get the quiz
+### Create a new quiz
 
-Here is an example how to request the hardcoded quiz.
+To create a new quiz, you need to send a JSON with the four keys: `title`, `text`, `options` (array of strings) and `answer`. 
+At this moment, all these keys are optional.
+
+An example of the request:
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "text":"What is depicted on the Java logo?", "options": ["Robot", "Tea leaf", "Cup of coffee", "Bug"], "answer": 2}' http://localhost:8888/api/quizzes
+```
+
+The response contains the same JSON with generated `id`.
+```json
+{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
+```
+It does not include `answer`.
+
+### Get a quiz
+
+To get an info about a quiz, you need to specify its `id` in url.
+
 ```
 curl -v -X GET http://localhost:8888/api/quizzes/1
 ```
 
-The response looks like the following:
+The response does not contain `answer`:
+```json
+{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
-{"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
+
+If the quiz does not exist, the server returns `HTTP 404`.
+
+### Get all quizzes
+
+To get all existing quizzes, you need to make a request without any params:
+
 ```
-It does not contain the answer.
+curl -v -X GET http://localhost:8888/api/quizzes
+```
+
+The response contains a JSON array of quizzes:
+
+```json
+[{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]},
+{"id":2,"title":"The Ultimate Question","text":"What is the answer to the Ultimate Question of Life, the Universe and Everything?","options":["Everything goes right","42","2+2=4","11011100"]}]
+```
+
+If there is no quizzes, it returns an empty JSON array:
+
+```json
+[]
+```
+
+In both cases, the status code is 200 (OK).
 
 ### Solving a quiz
 
-To solve a quiz, you need to pass the `answer` param using the `POST` request.
-The parameter means the index of the answer (it starts with 0).
+To solve a quiz, you need to pass the `answer` param to a special url using the `POST` request. The parameter means the index of the answer (it starts with 0). 
 The result is determined by the value of the boolean `success` key in the response json.
 
 Here is an example with `curl`:
 ```
-curl -X POST http://localhost:8888/api/quizzes?answer=2
+curl -X POST http://localhost:8888/api/quizzes/1/solve?answer=2
 ```
 
 - if the answer is correct:
-```
+```json
 {"success":true,"feedback":"Congratulations, you're right!"}
 ```
 
 - if the answer is incorrect:
-```
+```json
 {"success":false,"feedback":"Wrong answer! Please, try again."}
 ```
+
+- If the specified quiz does not exist, the server returns `HTTP 404`.
+
+

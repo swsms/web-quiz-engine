@@ -2,34 +2,46 @@ package org.hyperskill.webquizengine.controller;
 
 import org.hyperskill.webquizengine.model.Quiz;
 import org.hyperskill.webquizengine.model.Result;
+import org.hyperskill.webquizengine.service.QuizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(path = "/quizzes")
 public class QuizController {
     private final Logger logger = LoggerFactory.getLogger(QuizController.class);
-    private final static Quiz quiz;
+    private final QuizService service;
 
-    static {
-        quiz = new Quiz();
-        quiz.setTitle("The Java Logo");
-        quiz.setText("What is depicted on the Java logo?");
-        quiz.setOptions(List.of("Robot", "Tea leaf", "Cup of coffee", "Bug"));
+    @Autowired
+    public QuizController(QuizService service) {
+        this.service = service;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Quiz getFakeQuiz() {
-        logger.info("Someone got the quiz");
-        return quiz;
+    @PostMapping(path = "/{id}/solve", produces = APPLICATION_JSON_VALUE)
+    public Result solveQuiz(@PathVariable long id,
+                            @RequestParam int answer) {
+        return service.solve(id, answer);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Result solveQuiz(@RequestParam int answer) {
-        return answer == 2 ? Result.success() : Result.failure();
+    @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    public Quiz createQuiz(@RequestBody Quiz quiz) {
+        logger.info("Creating a quiz: {}", quiz);
+        return service.add(quiz);
+    }
+
+    @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    public Quiz getQuiz(@PathVariable long id) {
+        return service.findById(id);
+    }
+
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    public List<Quiz> getQuizList() {
+        return service.findAllSortedById();
     }
 }
