@@ -110,8 +110,6 @@ public class QuizControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
-
-
     @Test
     @Disabled
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
