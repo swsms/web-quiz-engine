@@ -1,5 +1,7 @@
 package org.hyperskill.webquizengine.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 public class Quiz {
@@ -42,6 +44,7 @@ public class Quiz {
         this.options = options;
     }
 
+    @JsonIgnore
     public int getAnswer() {
         return answer;
     }

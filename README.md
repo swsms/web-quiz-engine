@@ -14,10 +14,11 @@ An example:
 curl -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "text":"What is depicted on the Java logo?", "options": ["Robot", "Tea leaf", "Cup of coffee", "Bug"], "answer": 2}' http://localhost:8888/api/quizzes
 ```
 
-The result contains the same json with `id`:
+The result contains the same json with generated `id`.
 ```
-{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"],"answer":2}
+{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
+It does not include `answer`.
 
 ### Get a quiz
 
@@ -27,9 +28,9 @@ To get an info about a quiz, you need to specify its `id` in url.
 curl -v -X GET http://localhost:8888/api/quizzes/1
 ```
 
-The result does not contain `answer`.
+The result does not contain `answer`:
 ```
 {"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
 
-If the specified quiz does not exist, the server returns `HTTP 404`.
+If the quiz does not exist, the server returns `HTTP 404`.
