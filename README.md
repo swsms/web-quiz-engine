@@ -20,6 +20,10 @@ java -jar build/libs/*.jar
 
 ## Description
 
+At this stage, the service API supports creating, getting, and solving quizzes.
+Each quiz has an id, title, text, some options and only one correct answer.
+The answer is not returned in the API.
+
 ## Operations and their results
 
 The following are examples of all supported requests and responses using `curl`.
@@ -36,7 +40,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "
 ```
 
 The response contains the same JSON with generated `id`.
-```
+```json
 {"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
 It does not include `answer`.
@@ -50,7 +54,7 @@ curl -v -X GET http://localhost:8888/api/quizzes/1
 ```
 
 The response does not contain `answer`:
-```
+```json
 {"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
 
@@ -66,13 +70,13 @@ curl -v -X GET http://localhost:8888/api/quizzes
 
 The response contains a JSON array of quizzes:
 
-```
+```json
 [{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]},{"id":2,"title":"The Ultimate Question","text":"What is the answer to the Ultimate Question of Life, the Universe and Everything?","options":["Everything goes right","42","2+2=4","11011100"]}]
 ```
 
 If there is no quizzes, it returns an empty JSON array:
 
-```
+```json
 []
 ```
 
@@ -89,12 +93,12 @@ curl -X POST http://localhost:8888/api/quizzes/1/solve?answer=2
 ```
 
 - if the answer is correct:
-```
+```json
 {"success":true,"feedback":"Congratulations, you're right!"}
 ```
 
 - if the answer is incorrect:
-```
+```json
 {"success":false,"feedback":"Wrong answer! Please, try again."}
 ```
 
