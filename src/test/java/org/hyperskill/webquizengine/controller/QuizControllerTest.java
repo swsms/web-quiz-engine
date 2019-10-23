@@ -5,7 +5,6 @@ import org.assertj.core.util.Lists;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.service.QuizService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,13 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hyperskill.webquizengine.testutils.TestUtils.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,19 +40,10 @@ public class QuizControllerTest {
 
         when(service.add(any())).thenReturn(quizWithId);
 
-        mvc.perform(post("/quizzes")
+        expectQuizJsonIsValid(mvc.perform(post("/quizzes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(quizWithoutId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(quizWithId.getId()))
-                .andExpect(jsonPath("$.title").value(quizWithId.getTitle()))
-                .andExpect(jsonPath("$.text").value(quizWithId.getText()))
-                .andExpect(jsonPath("$.options").isArray())
-                .andExpect(jsonPath("$.options", hasSize(4)))
-                .andExpect(jsonPath("$.options", hasItem("Robot")))
-                .andExpect(jsonPath("$.options", hasItem("Tea leaf")))
-                .andExpect(jsonPath("$.options", hasItem("Cup of coffee")))
-                .andExpect(jsonPath("$.options", hasItem("Bug")));
+                .andExpect(status().isOk()), quizWithId);
     }
 
     @Test
@@ -66,18 +52,9 @@ public class QuizControllerTest {
 
         when(service.findById(anyLong())).thenReturn(quiz);
 
-        mvc.perform(get(String.format("/quizzes/%s", quiz.getId())))
+        expectQuizJsonIsValid(mvc.perform(get(String.format("/quizzes/%s", quiz.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(quiz.getId()))
-                .andExpect(jsonPath("$.title").value(quiz.getTitle()))
-                .andExpect(jsonPath("$.text").value(quiz.getText()))
-                .andExpect(jsonPath("$.options").isArray())
-                .andExpect(jsonPath("$.options", hasSize(4)))
-                .andExpect(jsonPath("$.options", hasItem("Robot")))
-                .andExpect(jsonPath("$.options", hasItem("Tea leaf")))
-                .andExpect(jsonPath("$.options", hasItem("Cup of coffee")))
-                .andExpect(jsonPath("$.options", hasItem("Bug")))
-                .andExpect(jsonPath("$.answer").doesNotExist());
+                .andExpect(jsonPath("$.answer").doesNotExist()), quiz);
     }
 
     @Test
@@ -111,30 +88,28 @@ public class QuizControllerTest {
     }
 
     @Test
-    @Disabled
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        var mvcResult = mvc.perform(post("/quizzes")
-                .param("answer", "2"))
+        when(service.solve(anyLong(), anyInt())).thenReturn(Result.success());
+
+        mvc.perform(post(String.format("/quizzes/%d/solve", 1))
+                .param("answer", String.valueOf(2)))
                 .andExpect(status().isOk())
-                .andReturn();
-
-        var body = mvcResult.getResponse().getContentAsString();
-        var quizResult = mapper.readValue(body, Result.class);
-
-        assertTrue(quizResult.isSuccess());
+                .andExpect(jsonPath("$.success").value(true));
     }
 
     @Test
-    @Disabled
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        var mvcResult = mvc.perform(post("/quizzes")
-                .param("answer", "1"))
+        when(service.solve(anyLong(), anyInt())).thenReturn(Result.failure());
+
+        mvc.perform(post(String.format("/quizzes/%d/solve", 1))
+                .param("answer", String.valueOf(2)))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(jsonPath("$.success").value(false));
+    }
 
-        var body = mvcResult.getResponse().getContentAsString();
-        var quizResult = mapper.readValue(body, Result.class);
-
-        assertFalse(quizResult.isSuccess());
+    @Test
+    public void testSolveQuiz_whenNoAnswer() throws Exception {
+        mvc.perform(post(String.format("/quizzes/%d/solve", 1)))
+                .andExpect(status().isBadRequest());
     }
 }

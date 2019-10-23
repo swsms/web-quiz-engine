@@ -58,3 +58,27 @@ If there is no quizzes, it returns an empty JSON array:
 ```
 
 In both cases, the status code is 200 (OK).
+
+### Solving a quiz
+
+To solve a quiz, you need to pass the `answer` param to a special url using the `POST` request.
+The result is determined by the value of the boolean `success` key in the response json.
+
+Here is an example with `curl`:
+```
+curl -X POST http://localhost:8888/api/quizzes/1/solve?answer=2
+```
+
+- if the answer is correct:
+```
+{"success":true,"feedback":"Congratulations, you're right!"}
+```
+
+- if the answer is incorrect:
+```
+{"success":false,"feedback":"Wrong answer! Please, try again."}
+```
+
+- If the specified quiz does not exist, the server returns `HTTP 404`.
+
+
