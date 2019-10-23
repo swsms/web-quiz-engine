@@ -2,6 +2,7 @@ package org.hyperskill.webquizengine.service;
 
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.model.Quiz;
+import org.hyperskill.webquizengine.testutils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,15 +24,9 @@ public class QuizServiceTest {
         service = new QuizService();
     }
 
-    private List<Quiz> generateTestQuizzes() {
-        return Stream.generate(Quiz::new)
-                .limit(10)
-                .collect(Collectors.toList());
-    }
-
     @Test
     public void testAddQuiz() {
-        var quizzes = generateTestQuizzes();
+        var quizzes = TestUtils.generateTestQuizzes();
         var index = 1;
         for (var q : quizzes) {
             var quiz = service.add(q);
@@ -45,7 +38,7 @@ public class QuizServiceTest {
 
     @Test
     public void testFindById_whenExist() {
-        generateTestQuizzes().stream()
+        TestUtils.generateTestQuizzes().stream()
                 .map(q -> service.add(q))
                 .forEach((q) -> {
                     var quiz = service.findById(q.getId());

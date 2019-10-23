@@ -1,9 +1,9 @@
 package org.hyperskill.webquizengine.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hyperskill.webquizengine.model.Quiz;
 import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.service.QuizService;
+import org.hyperskill.webquizengine.testutils.TestUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,24 +32,10 @@ public class QuizControllerTest {
     @MockBean
     private QuizService service;
 
-    private Quiz createTestQuizWithoutId() {
-        return createTestQuizWithId(null);
-    }
-
-    private Quiz createTestQuizWithId(Long id) {
-        var quiz = new Quiz();
-        quiz.setId(id);
-        quiz.setTitle("The Java Logo");
-        quiz.setText("What is depicted on the Java logo?");
-        quiz.setOptions(List.of("Robot","Tea leaf","Cup of coffee","Bug"));
-        quiz.setAnswer(2);
-        return quiz;
-    }
-
     @Test
     public void testCreateQuiz() throws Exception {
-        var quizWithId = createTestQuizWithId(1L);
-        var quizWithoutId = createTestQuizWithoutId();
+        var quizWithId = TestUtils.createTestQuizWithId(1L);
+        var quizWithoutId = TestUtils.createTestQuizWithoutId();
 
         when(service.add(any())).thenReturn(quizWithId);
 
