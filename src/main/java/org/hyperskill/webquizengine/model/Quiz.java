@@ -1,6 +1,6 @@
 package org.hyperskill.webquizengine.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -10,6 +10,8 @@ public class Quiz {
     private String title;
     private String text;
     private List<String> options;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int answer;
 
     public Long getId() {
@@ -44,7 +46,6 @@ public class Quiz {
         this.options = options;
     }
 
-    @JsonIgnore
     public int getAnswer() {
         return answer;
     }
