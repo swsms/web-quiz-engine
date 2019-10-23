@@ -1,6 +1,25 @@
 # Web Quiz Engine
 A simple engine for creating and solving quizzes through HTTP API.
 
+## Running the application
+
+- Building app
+```
+./gradlew build
+```
+
+- Running app
+```
+java -jar build/libs/*.jar
+```
+
+- Or simply
+```
+./gradlew bootRun
+```
+
+## Description
+
 ## Operations and their results
 
 The following are examples of all supported requests and responses using `curl`.
@@ -61,7 +80,7 @@ In both cases, the status code is 200 (OK).
 
 ### Solving a quiz
 
-To solve a quiz, you need to pass the `answer` param to a special url using the `POST` request.
+To solve a quiz, you need to pass the `answer` param to a special url using the `POST` request. The parameter means the index of the answer (it starts with 0). 
 The result is determined by the value of the boolean `success` key in the response json.
 
 Here is an example with `curl`:
