@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class QuizServiceTest {
-
+    private static final int NUMBER_OF_QUIZZES = 10;
     private QuizService service;
 
     @BeforeEach
@@ -26,7 +26,7 @@ public class QuizServiceTest {
 
     @Test
     public void testAddQuiz() {
-        var quizzes = TestUtils.generateTestQuizzes();
+        var quizzes = TestUtils.createTestQuizzes(NUMBER_OF_QUIZZES);
         var index = 1;
         for (var q : quizzes) {
             var quiz = service.add(q);
@@ -38,7 +38,7 @@ public class QuizServiceTest {
 
     @Test
     public void testFindById_whenExist() {
-        TestUtils.generateTestQuizzes().stream()
+        TestUtils.createTestQuizzes(NUMBER_OF_QUIZZES).stream()
                 .map(q -> service.add(q))
                 .forEach((q) -> {
                     var quiz = service.findById(q.getId());

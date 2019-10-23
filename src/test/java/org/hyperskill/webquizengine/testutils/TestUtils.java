@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 public final class TestUtils {
     private TestUtils() { }
 
-    public static Quiz createTestQuizWithoutId() {
-        return createTestQuizWithId(null);
+    public static Quiz createJavaLogoQuizWithoutId() {
+        return createJavaLogoQuizWithId(null);
     }
 
-    public static Quiz createTestQuizWithId(Long id) {
+    public static Quiz createJavaLogoQuizWithId(Long id) {
         var quiz = new Quiz();
         quiz.setId(id);
         quiz.setTitle("The Java Logo");
@@ -23,7 +23,7 @@ public final class TestUtils {
         return quiz;
     }
 
-    public static List<Quiz> generateTestQuizzes() {
+    public static List<Quiz> createTestQuizzes(int n) {
         return Stream.generate(Quiz::new)
                 .limit(10)
                 .collect(Collectors.toList());
