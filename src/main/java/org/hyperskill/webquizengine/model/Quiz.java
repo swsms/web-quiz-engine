@@ -49,4 +49,15 @@ public class Quiz {
     public void setAnswer(int answer) {
         this.answer = answer;
     }
+
+    @Override
+    public String toString() {
+        return "Quiz{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", options=" + options +
+                ", answer=" + answer +
+                '}';
+    }
 }
