@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(QuizController.class)
@@ -43,8 +43,9 @@ public class QuizControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(quizWithoutId)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(quizWithId)))
-                .andReturn();
+                .andExpect(jsonPath("$.id").value(quizWithId.getId()))
+                .andExpect(jsonPath("$.title").value(quizWithId.getTitle()))
+                .andExpect(jsonPath("$.text").value(quizWithId.getText()));
     }
 
     @Test
