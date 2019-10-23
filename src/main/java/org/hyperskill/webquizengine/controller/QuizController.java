@@ -25,4 +25,10 @@ public class QuizController {
         logger.info("Creating a quiz: {}", quiz);
         return service.add(quiz);
     }
+
+    // TODO Avoid sending answer
+    @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    public Quiz getQuiz(@PathVariable long id) {
+        return service.findById(id);
+    }
 }
