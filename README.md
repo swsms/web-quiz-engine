@@ -1,12 +1,14 @@
 # Web Quiz Engine
-A simple engine for creating and passing quizzes through HTTP API.
+A simple engine for creating and solving quizzes through HTTP API.
 
 ## Operations and their results
 
+The following are examples of all supported requests and responses using `curl`.
+
 ### Create a new quiz
 
-To create a new quiz, you need to send a json with the four keys: `title`, `text`, `options` and `answer`. 
-At this moment, all these keys are not required.
+To create a new quiz, you need to send a json with the four keys: `title`, `text`, `options` (array of strings) and `answer`. 
+At this moment, all these keys are optional.
 
 An example:
 
