@@ -62,4 +62,12 @@ public class UtilsTest {
         quiz.setAnswer(Set.of(0));
         assertThrows(InvalidAnswerOptions.class, () -> checkAnswerOptions(quiz));
     }
+
+    @Test
+    public void testCheckAnswerOptions_whenNoOptionsAndAnswer() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of());
+        quiz.setAnswer(Set.of());
+        checkAnswerOptions(quiz);
+    }
 }

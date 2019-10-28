@@ -21,7 +21,7 @@ java -jar build/libs/*.jar
 ## Description
 
 At this stage, the service API supports creating, getting, and solving quizzes.
-Each quiz has an id, title, text, some options and only one correct answer.
+Each quiz has an id, title, text, some options. Some of the options are correct (from 0 to all).
 The answer is not returned in the API.
 
 ## Operations and their results
@@ -30,8 +30,11 @@ The following are examples of all supported requests and responses using `curl`.
 
 ### Create a new quiz
 
-To create a new quiz, you need to send a JSON with the four keys: `title`, `text`, `options` (array of strings) and `answer`. 
-At this moment, all these keys are optional.
+To create a new quiz, you need to send a JSON via `POST` request with the following keys: 
+- `title`: string, required;
+- `text`: string, required;
+- `options`: an array of strings, it's required, and should contain at least 2 items; 
+- `answer`: an array of indexes of correct options, it's optional since all options can be wrong.
 
 An example of the request:
 
@@ -44,6 +47,9 @@ The response contains the same JSON with generated `id`.
 {"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}
 ```
 It does not include `answer`.
+
+If the request JSON does not contain `title` or `text`, or they are empty strings (`""`), then the response is `404`.
+If the number of options in the quiz is less than 2, the response is `404` as well.
 
 ### Get a quiz
 
@@ -85,13 +91,19 @@ In both cases, the status code is 200 (OK).
 
 ### Solving a quiz
 
-To solve a quiz, you need to pass the `answer` param to a special url using the `POST` request. The parameter means the index of the answer (it starts with 0). 
-The result is determined by the value of the boolean `success` key in the response json.
+To solve a quiz, you need to pass an answer JSON-array with option indexes via `POST` request.
 
 Here is an example with `curl`:
 ```
-curl -X POST http://localhost:8888/api/quizzes/1/solve?answer=2
+curl -X POST -H 'Content-Type: application/json' http://localhost:8888/api/quizzes/1/solve --data '[1, 2]'
 ```
+
+It is also possible to send an empty array of options because some quizzes may not have correct options.
+```
+curl -X POST -H 'Content-Type: application/json' http://localhost:8888/api/quizzes/1/solve --data '[]'
+```
+
+The result is determined by the value of the boolean `success` key in the response json.
 
 - if the answer is correct:
 ```json

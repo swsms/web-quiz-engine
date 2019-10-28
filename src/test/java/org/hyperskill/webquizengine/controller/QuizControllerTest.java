@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -37,7 +38,7 @@ public class QuizControllerTest {
     private QuizService service;
 
     @Test
-    public void testCreateQuiz() throws Exception {
+    public void testCreateQuiz_whenFourOptionsAndAnswerExist() throws Exception {
         var quizWithId = createJavaLogoQuizWithId(1L);
         var quizWithoutId = createJavaLogoQuizWithoutId();
 
@@ -47,6 +48,36 @@ public class QuizControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(quizWithoutId)))
                 .andExpect(status().isOk()), quizWithId);
+    }
+
+    @Test
+    public void testCreateQuiz_whenNoAnswer() throws Exception {
+        var quizWithId = createJavaLogoQuizWithId(1L);
+        var quizWithoutId = createJavaLogoQuizWithoutId();
+
+        quizWithoutId.setAnswer(Collections.emptySet());
+
+        when(service.add(any())).thenReturn(quizWithId);
+
+        expectQuizJsonIsValid(mvc.perform(post("/quizzes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(quizWithoutId)))
+                .andExpect(status().isOk()), quizWithId);
+    }
+
+    @Test
+    public void testCreateQuiz_whenNoOptions() throws Exception {
+        var quizWithId = createJavaLogoQuizWithId(1L);
+        var quizWithoutId = createJavaLogoQuizWithoutId();
+
+        quizWithoutId.setOptions(Collections.emptyList());
+
+        when(service.add(any())).thenReturn(quizWithId);
+
+        mvc.perform(post("/quizzes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(quizWithoutId)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
