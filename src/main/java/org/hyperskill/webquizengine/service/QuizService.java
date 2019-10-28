@@ -6,10 +6,7 @@ import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.utils.Utils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,12 +16,12 @@ public class QuizService {
     private final ConcurrentMap<Long, Quiz> storage = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
 
-    public Result solve(long quizId, List<Integer> answer) {
+    public Result solve(long quizId, Set<Integer> answer) {
         var quiz = storage.get(quizId);
         if (quiz == null) {
             throw new QuizNotFoundException();
         }
-        return Objects.equals(quiz.getAnswer().get(0), answer.get(0)) ?
+        return Objects.equals(answer, new HashSet<>(quiz.getAnswer())) ?
                 Result.success() : Result.failure();
     }
 

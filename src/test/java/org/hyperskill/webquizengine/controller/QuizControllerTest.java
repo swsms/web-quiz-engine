@@ -89,7 +89,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anyList())).thenReturn(Result.success());
+        when(service.solve(anyLong(), anySet())).thenReturn(Result.success());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .param("answer", String.valueOf(2)))
@@ -99,7 +99,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anyList())).thenReturn(Result.failure());
+        when(service.solve(anyLong(), anySet())).thenReturn(Result.failure());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .param("answer", String.valueOf(2)))

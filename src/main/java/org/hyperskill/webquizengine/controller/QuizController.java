@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,7 +27,7 @@ public class QuizController {
 
     @PostMapping(path = "/{id}/solve", produces = APPLICATION_JSON_VALUE)
     public Result solveQuiz(@PathVariable long id,
-                            @RequestParam List<Integer> answer) {
+                            @RequestParam Set<Integer> answer) {
         return service.solve(id, answer);
     }
 

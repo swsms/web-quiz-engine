@@ -6,19 +6,28 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.hyperskill.webquizengine.utils.Utils.checkAnswerOptions;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UtilsTest {
 
     @Test
-    public void testCheckAnswerOptions_whenCorrect() {
+    public void testCheckAnswerOptions_whenOneOptionIsCorrect() {
         var quiz = new Quiz();
-        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setOptions(List.of("a"));
         quiz.setAnswer(List.of(0));
-        Utils.checkAnswerOptions(quiz);
+        checkAnswerOptions(quiz);
+    }
 
-        quiz.setAnswer(List.of(0, 1, 2));
-        Utils.checkAnswerOptions(quiz);
+    @Test
+    public void testCheckAnswerOptions_whenSeveralOptionsAreCorrect() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of("a", "b"));
+        quiz.setAnswer(List.of(0));
+        checkAnswerOptions(quiz);
+
+        quiz.setAnswer(List.of(0, 1));
+        checkAnswerOptions(quiz);
     }
 
     @Test
@@ -26,7 +35,7 @@ public class UtilsTest {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
         quiz.setAnswer(List.of(-1));
-        assertThrows(InvalidAnswerOptions.class, () -> Utils.checkAnswerOptions(quiz));
+        assertThrows(InvalidAnswerOptions.class, () -> checkAnswerOptions(quiz));
     }
 
     @Test
@@ -34,7 +43,7 @@ public class UtilsTest {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
         quiz.setAnswer(List.of(3));
-        assertThrows(InvalidAnswerOptions.class, () -> Utils.checkAnswerOptions(quiz));
+        assertThrows(InvalidAnswerOptions.class, () -> checkAnswerOptions(quiz));
     }
 
     @Test
@@ -42,7 +51,7 @@ public class UtilsTest {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c", "d", "e"));
         quiz.setAnswer(List.of(0, 1, 2, 6, 3));
-        assertThrows(InvalidAnswerOptions.class, () -> Utils.checkAnswerOptions(quiz));
+        assertThrows(InvalidAnswerOptions.class, () -> checkAnswerOptions(quiz));
     }
 
     @Test
@@ -50,6 +59,6 @@ public class UtilsTest {
         var quiz = new Quiz();
         quiz.setOptions(List.of());
         quiz.setAnswer(List.of(0));
-        assertThrows(InvalidAnswerOptions.class, () -> Utils.checkAnswerOptions(quiz));
+        assertThrows(InvalidAnswerOptions.class, () -> checkAnswerOptions(quiz));
     }
 }
