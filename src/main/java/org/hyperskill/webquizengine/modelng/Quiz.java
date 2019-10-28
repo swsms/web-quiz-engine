@@ -8,7 +8,7 @@ import java.util.List;
 @Table(name = "quiz")
 public class Quiz {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quiz_seq")
     private Long id;
 
     @Column(nullable = false)
@@ -17,8 +17,9 @@ public class Quiz {
     @Column(nullable = false)
     private String text;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "quiz_id", nullable = false)
+    @OrderBy("position")
     private List<Option> options = new ArrayList<>();
 
     public Long getId() {

@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "option")
 public class Option {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "option_seq")
     private Long id;
 
     @Column(nullable = false)
@@ -15,14 +15,14 @@ public class Option {
     @Column(nullable = false)
     private Boolean correct;
 
+    private int position;
+
     public static Option newOption(String text, boolean correct) {
         var option = new Option();
         option.setText(text);
         option.setCorrect(correct);
         return option;
     }
-
-    private int position;
 
     public Long getId() {
         return id;
