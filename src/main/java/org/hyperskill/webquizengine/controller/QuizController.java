@@ -27,7 +27,7 @@ public class QuizController {
     @PostMapping(path = "/{id}/solve", produces = APPLICATION_JSON_VALUE)
     public Result solveQuiz(@PathVariable long id,
                             @RequestParam List<Integer> answer) {
-        return service.solve(id, answer.get(0));
+        return service.solve(id, answer);
     }
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)

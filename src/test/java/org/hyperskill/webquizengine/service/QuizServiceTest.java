@@ -56,23 +56,23 @@ public class QuizServiceTest {
     @Test
     public void testSolve_whenCorrectAnswer() {
         var quiz = new Quiz();
-        quiz.setAnswer(1);
+        quiz.setAnswer(List.of(1));
         var id = service.add(quiz).getId();
-        var result = service.solve(id, 1);
+        var result = service.solve(id, List.of(1));
         assertTrue(result.isSuccess());
     }
 
     @Test
     public void testSolve_whenIncorrectAnswer() {
         var quiz = new Quiz();
-        quiz.setAnswer(2);
+        quiz.setAnswer(List.of(2));
         var id = service.add(quiz).getId();
-        var result = service.solve(id, 1);
+        var result = service.solve(id, List.of(1));
         assertFalse(result.isSuccess());
     }
 
     @Test
     public void testSolve_whenQuizNotFound() {
-        assertThrows(QuizNotFoundException.class, () -> service.solve(2, 1));
+        assertThrows(QuizNotFoundException.class, () -> service.solve(2, List.of(1)));
     }
 }

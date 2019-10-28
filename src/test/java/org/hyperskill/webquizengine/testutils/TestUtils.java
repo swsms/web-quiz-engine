@@ -24,7 +24,7 @@ public final class TestUtils {
         quiz.setTitle("The Java Logo");
         quiz.setText("What is depicted on the Java logo?");
         quiz.setOptions(List.of("Robot","Tea leaf","Cup of coffee","Bug"));
-        quiz.setAnswer(2);
+        quiz.setAnswer(List.of(2));
         return quiz;
     }
 
