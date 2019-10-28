@@ -1,5 +1,6 @@
 package org.hyperskill.webquizengine.controller;
 
+import org.hyperskill.webquizengine.dto.UserDto;
 import org.hyperskill.webquizengine.model.User;
 import org.hyperskill.webquizengine.repository.UserRepository;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,10 +29,10 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register", consumes = APPLICATION_JSON_VALUE)
-    public void register(@RequestBody User user) {
-        logger.info("A new user '{}' wants to register", user.getUsername());
-        var encodedPassword = encoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+    public void register(@Valid @RequestBody UserDto userDto) {
+        logger.info("A new user '{}' wants to register", userDto.getEmail());
+        var encodedPassword = encoder.encode(userDto.getPassword());
+        var user = new User(userDto.getEmail(), encodedPassword);
         repository.save(user);
     }
 }
