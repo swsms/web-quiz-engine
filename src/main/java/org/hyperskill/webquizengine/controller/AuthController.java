@@ -1,12 +1,10 @@
 package org.hyperskill.webquizengine.controller;
 
 import org.hyperskill.webquizengine.dto.UserDto;
-import org.hyperskill.webquizengine.model.User;
-import org.hyperskill.webquizengine.repository.UserRepository;
+import org.hyperskill.webquizengine.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,21 +16,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
-    private final BCryptPasswordEncoder encoder;
-    private final UserRepository repository;
+    private final UserService service;
 
     @Autowired
-    public AuthController(BCryptPasswordEncoder encoder, UserRepository repository) {
-        this.encoder = encoder;
-        this.repository = repository;
+    public AuthController(UserService service) {
+        this.service = service;
     }
 
     @PostMapping(path = "/register", consumes = APPLICATION_JSON_VALUE)
-    public void register(@Valid @RequestBody UserDto userDto) {
+    public UserDto register(@Valid @RequestBody UserDto userDto) {
         logger.info("A new user '{}' wants to register", userDto.getEmail());
-        var encodedPassword = encoder.encode(userDto.getPassword());
-        var user = new User(userDto.getEmail(), encodedPassword);
-        repository.save(user);
+        Long id = service.registerNewUser(userDto.getEmail(), userDto.getPassword());
+        userDto.setId(id);
+        return userDto;
     }
 }
