@@ -2,14 +2,26 @@ package org.hyperskill.webquizengine.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Quiz {
 
     private Long id;
+
+    @NotNull(message = "Quiz must have a title")
+    @NotEmpty(message = "Quiz title should not be empty")
     private String title;
+
+    @NotNull(message = "Quiz must have a title")
+    @NotEmpty(message = "Quiz title should not be empty")
     private String text;
-    private List<String> options;
+
+    @Size(min = 2, message = "Quiz must contain at least two options")
+    private List<String> options = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int answer;
