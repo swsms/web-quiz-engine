@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,25 +55,57 @@ public class QuizServiceTest {
     }
 
     @Test
-    public void testSolve_whenCorrectAnswer() {
+    public void testSolve_whenSingleCorrectOption() {
         var quiz = new Quiz();
-        quiz.setAnswer(1);
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(0));
         var id = service.add(quiz).getId();
-        var result = service.solve(id, 1);
+        var result = service.solve(id, Set.of(0));
         assertTrue(result.isSuccess());
     }
 
     @Test
-    public void testSolve_whenIncorrectAnswer() {
+    public void testSolve_whenSeveralCorrectOptions() {
         var quiz = new Quiz();
-        quiz.setAnswer(2);
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(0, 1, 2));
         var id = service.add(quiz).getId();
-        var result = service.solve(id, 1);
+        var result = service.solve(id, Set.of(0, 1, 2));
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testSolve_whenDuplicateCorrectOptions() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(0, 1));
+        var id = service.add(quiz).getId();
+        var result = service.solve(id, Set.of(0, 1));
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testSolve_whenSingleIncorrectOption() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(2));
+        var id = service.add(quiz).getId();
+        var result = service.solve(id, Set.of(1));
+        assertFalse(result.isSuccess());
+    }
+
+    @Test
+    public void testSolve_whenNotAllCorrectOptions() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(0, 1, 2));
+        var id = service.add(quiz).getId();
+        var result = service.solve(id, Set.of(0, 1));
         assertFalse(result.isSuccess());
     }
 
     @Test
     public void testSolve_whenQuizNotFound() {
-        assertThrows(QuizNotFoundException.class, () -> service.solve(2, 1));
+        assertThrows(QuizNotFoundException.class, () -> service.solve(2, Set.of(1)));
     }
 }

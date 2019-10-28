@@ -2,6 +2,7 @@ package org.hyperskill.webquizengine.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Lists;
+import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.service.QuizService;
@@ -11,6 +12,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hyperskill.webquizengine.testutils.TestUtils.*;
@@ -34,7 +38,7 @@ public class QuizControllerTest {
     private QuizService service;
 
     @Test
-    public void testCreateQuiz() throws Exception {
+    public void testCreateQuiz_whenFourOptionsAndAnswerExist() throws Exception {
         var quizWithId = createJavaLogoQuizWithId(1L);
         var quizWithoutId = createJavaLogoQuizWithoutId();
 
@@ -44,6 +48,36 @@ public class QuizControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(quizWithoutId)))
                 .andExpect(status().isOk()), quizWithId);
+    }
+
+    @Test
+    public void testCreateQuiz_whenNoAnswer() throws Exception {
+        var quizWithId = createJavaLogoQuizWithId(1L);
+        var quizWithoutId = createJavaLogoQuizWithoutId();
+
+        quizWithoutId.setAnswer(Collections.emptySet());
+
+        when(service.add(any())).thenReturn(quizWithId);
+
+        expectQuizJsonIsValid(mvc.perform(post("/quizzes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(quizWithoutId)))
+                .andExpect(status().isOk()), quizWithId);
+    }
+
+    @Test
+    public void testCreateQuiz_whenNoOptions() throws Exception {
+        var quizWithId = createJavaLogoQuizWithId(1L);
+        var quizWithoutId = createJavaLogoQuizWithoutId();
+
+        quizWithoutId.setOptions(Collections.emptyList());
+
+        when(service.add(any())).thenReturn(quizWithId);
+
+        mvc.perform(post("/quizzes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(quizWithoutId)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -58,7 +92,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void testGetQuiz_whenNonExists() throws Exception {
+    public void testGetQuiz_whenQuizNotFound() throws Exception {
         when(service.findById(anyLong())).thenThrow(QuizNotFoundException.class);
 
         mvc.perform(get(String.format("/quizzes/%d", 1)))
@@ -89,20 +123,22 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anyInt())).thenReturn(Result.success());
+        when(service.solve(anyLong(), anySet())).thenReturn(Result.success());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
-                .param("answer", String.valueOf(2)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
     }
 
     @Test
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anyInt())).thenReturn(Result.failure());
+        when(service.solve(anyLong(), anySet())).thenReturn(Result.failure());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
-                .param("answer", String.valueOf(2)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -110,6 +146,16 @@ public class QuizControllerTest {
     @Test
     public void testSolveQuiz_whenNoAnswer() throws Exception {
         mvc.perform(post(String.format("/quizzes/%d/solve", 1)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testSolveQuiz_whenInvalidAnswerOptions() throws Exception {
+        when(service.solve(anyLong(), anySet())).thenThrow(InvalidAnswerOptions.class);
+
+        mvc.perform(post(String.format("/quizzes/%d/solve", 1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isBadRequest());
     }
 }
