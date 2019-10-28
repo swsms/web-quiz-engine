@@ -105,10 +105,7 @@ public class QuizControllerTest {
     public void testGetQuizList_whenManyQuizzes() throws Exception {
         var quizzes = createTestQuizzes(10);
 
-        when(service.findAllSortedById())
-                .thenReturn(quizzes.stream()
-                        .map(Utils::convertQuizDtoToEntity)
-                        .collect(Collectors.toList()));
+        when(service.findAllSortedById()).thenReturn(quizzes);
 
         mvc.perform(get("/quizzes"))
                 .andExpect(status().isOk())

@@ -1,6 +1,7 @@
 package org.hyperskill.webquizengine.testutils;
 
 import org.hyperskill.webquizengine.dto.QuizDto;
+import org.hyperskill.webquizengine.model.Quiz;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
@@ -44,8 +45,8 @@ public final class TestUtils {
                 .andExpect(jsonPath("$.options", hasItem("Bug")));
     }
 
-    public static List<QuizDto> createTestQuizzes(int n) {
-        return Stream.generate(QuizDto::new)
+    public static List<Quiz> createTestQuizzes(int n) {
+        return Stream.generate(Quiz::new)
                 .limit(10)
                 .collect(Collectors.toList());
     }
