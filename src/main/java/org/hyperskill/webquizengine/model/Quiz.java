@@ -1,32 +1,26 @@
 package org.hyperskill.webquizengine.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+@Entity
+@Table(name = "quiz")
 public class Quiz {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quiz_seq")
     private Long id;
 
-    @NotNull(message = "Quiz must have a title")
-    @NotEmpty(message = "Quiz title should not be empty")
+    @Column(nullable = false)
     private String title;
 
-    @NotNull(message = "Quiz must have a title")
-    @NotEmpty(message = "Quiz title should not be empty")
+    @Column(nullable = false)
     private String text;
 
-    @Size(min = 2, message = "Quiz must contain at least two options")
-    private List<String> options = new ArrayList<>();
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Set<Integer> answer = new HashSet<>();
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "quiz_id", nullable = false)
+    @OrderBy("position")
+    private List<Option> options = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -52,20 +46,12 @@ public class Quiz {
         this.text = text;
     }
 
-    public List<String> getOptions() {
+    public List<Option> getOptions() {
         return options;
     }
 
-    public void setOptions(List<String> options) {
+    public void setOptions(List<Option> options) {
         this.options = options;
-    }
-
-    public Set<Integer> getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(Set<Integer> answer) {
-        this.answer = answer;
     }
 
     @Override
@@ -74,8 +60,6 @@ public class Quiz {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
-                ", options=" + options +
-                ", answer=" + answer +
                 '}';
     }
 }

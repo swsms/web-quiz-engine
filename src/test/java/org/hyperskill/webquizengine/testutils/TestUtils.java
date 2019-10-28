@@ -1,5 +1,6 @@
 package org.hyperskill.webquizengine.testutils;
 
+import org.hyperskill.webquizengine.dto.QuizDto;
 import org.hyperskill.webquizengine.model.Quiz;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -17,12 +18,12 @@ public final class TestUtils {
 
     private TestUtils() { }
 
-    public static Quiz createJavaLogoQuizWithoutId() {
+    public static QuizDto createJavaLogoQuizWithoutId() {
         return createJavaLogoQuizWithId(null);
     }
 
-    public static Quiz createJavaLogoQuizWithId(Long id) {
-        var quiz = new Quiz();
+    public static QuizDto createJavaLogoQuizWithId(Long id) {
+        var quiz = new QuizDto();
         quiz.setId(id);
         quiz.setTitle("The Java Logo");
         quiz.setText("What is depicted on the Java logo?");
@@ -31,7 +32,7 @@ public final class TestUtils {
         return quiz;
     }
 
-    public static ResultActions expectQuizJsonIsValid(ResultActions actions, Quiz quiz) throws Exception {
+    public static ResultActions expectQuizJsonIsValid(ResultActions actions, QuizDto quiz) throws Exception {
         return actions
                 .andExpect(jsonPath("$.id").value(quiz.getId()))
                 .andExpect(jsonPath("$.title").value(quiz.getTitle()))

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Lists;
 import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
-import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.service.QuizService;
+import org.hyperskill.webquizengine.util.Utils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,9 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hyperskill.webquizengine.testutils.TestUtils.*;
+import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,7 +44,7 @@ public class QuizControllerTest {
         var quizWithId = createJavaLogoQuizWithId(1L);
         var quizWithoutId = createJavaLogoQuizWithoutId();
 
-        when(service.add(any())).thenReturn(quizWithId);
+        when(service.add(any())).thenReturn(quizWithId.getId());
 
         expectQuizJsonIsValid(mvc.perform(post("/quizzes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -57,7 +59,7 @@ public class QuizControllerTest {
 
         quizWithoutId.setAnswer(Collections.emptySet());
 
-        when(service.add(any())).thenReturn(quizWithId);
+        when(service.add(any())).thenReturn(quizWithId.getId());
 
         expectQuizJsonIsValid(mvc.perform(post("/quizzes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +74,7 @@ public class QuizControllerTest {
 
         quizWithoutId.setOptions(Collections.emptyList());
 
-        when(service.add(any())).thenReturn(quizWithId);
+        when(service.add(any())).thenReturn(quizWithId.getId());
 
         mvc.perform(post("/quizzes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +86,7 @@ public class QuizControllerTest {
     public void testGetQuiz_whenExists() throws Exception {
         var quiz = createJavaLogoQuizWithId(1L);
 
-        when(service.findById(anyLong())).thenReturn(quiz);
+        when(service.findById(anyLong())).thenReturn(convertQuizDtoToEntity(quiz));
 
         expectQuizJsonIsValid(mvc.perform(get(String.format("/quizzes/%s", quiz.getId())))
                 .andExpect(status().isOk())
@@ -123,7 +125,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anySet())).thenReturn(Result.success());
+        when(service.solve(anyLong(), anySet())).thenReturn(true);
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +136,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        when(service.solve(anyLong(), anySet())).thenReturn(Result.failure());
+        when(service.solve(anyLong(), anySet())).thenReturn(false);
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .contentType(MediaType.APPLICATION_JSON)

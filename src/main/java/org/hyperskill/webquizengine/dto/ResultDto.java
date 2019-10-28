@@ -1,10 +1,10 @@
-package org.hyperskill.webquizengine.model;
+package org.hyperskill.webquizengine.dto;
 
-public class Result {
+public class ResultDto {
     private boolean success;
     private String feedback;
 
-    public Result(boolean success, String feedback) {
+    public ResultDto(boolean success, String feedback) {
         this.success = success;
         this.feedback = feedback;
     }
@@ -25,14 +25,14 @@ public class Result {
         this.feedback = feedback;
     }
 
-    public static Result success() {
+    public static ResultDto success() {
         var feedback = "Congratulations, you're right!";
-        return new Result(true, feedback);
+        return new ResultDto(true, feedback);
     }
 
-    public static Result failure() {
+    public static ResultDto failure() {
         var feedback = "Wrong answer! Please, try again.";
-        return new Result(false, feedback);
+        return new ResultDto(false, feedback);
     }
 }
 
