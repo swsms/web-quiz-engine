@@ -1,6 +1,8 @@
 # Web Quiz Engine
 A simple engine for creating and solving quizzes through HTTP API.
 
+It uses an embedded H2 database to store all data in the file system.
+
 ## Running the application
 
 - Building app
@@ -17,6 +19,8 @@ java -jar build/libs/*.jar
 ```
 ./gradlew bootRun
 ```
+
+By default, it runs on the port `8888` and works with the `quizdb` database in the user's home directory.
 
 ## Description
 
