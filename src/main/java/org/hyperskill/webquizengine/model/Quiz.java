@@ -1,4 +1,4 @@
-package org.hyperskill.webquizengine.modelng;
+package org.hyperskill.webquizengine.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;

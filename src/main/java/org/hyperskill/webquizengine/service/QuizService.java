@@ -1,7 +1,7 @@
 package org.hyperskill.webquizengine.service;
 
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
-import org.hyperskill.webquizengine.modelng.Quiz;
+import org.hyperskill.webquizengine.model.Quiz;
 import org.hyperskill.webquizengine.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

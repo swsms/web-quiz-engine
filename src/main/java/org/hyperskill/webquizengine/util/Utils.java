@@ -2,8 +2,8 @@ package org.hyperskill.webquizengine.util;
 
 import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.dto.QuizDto;
-import org.hyperskill.webquizengine.modelng.Option;
-import org.hyperskill.webquizengine.modelng.Quiz;
+import org.hyperskill.webquizengine.model.Option;
+import org.hyperskill.webquizengine.model.Quiz;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,13 +1,13 @@
 package org.hyperskill.webquizengine.util;
 
 import org.hyperskill.webquizengine.dto.QuizDto;
-import org.hyperskill.webquizengine.modelng.Quiz;
+import org.hyperskill.webquizengine.model.Quiz;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static org.hyperskill.webquizengine.modelng.Option.newOption;
+import static org.hyperskill.webquizengine.model.Option.newOption;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizEntityToDtoWithoutAnswer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
