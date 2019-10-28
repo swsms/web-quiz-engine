@@ -21,7 +21,7 @@ public class QuizService {
         if (quiz == null) {
             throw new QuizNotFoundException();
         }
-        return Objects.equals(answer, new HashSet<>(quiz.getAnswer())) ?
+        return Objects.equals(answer, quiz.getAnswer()) ?
                 Result.success() : Result.failure();
     }
 

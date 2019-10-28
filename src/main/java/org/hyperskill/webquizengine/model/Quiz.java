@@ -6,7 +6,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Quiz {
 
@@ -24,7 +26,7 @@ public class Quiz {
     private List<String> options = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<Integer> answer = new ArrayList<>();
+    private Set<Integer> answer = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -58,11 +60,11 @@ public class Quiz {
         this.options = options;
     }
 
-    public List<Integer> getAnswer() {
+    public Set<Integer> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(List<Integer> answer) {
+    public void setAnswer(Set<Integer> answer) {
         this.answer = answer;
     }
 

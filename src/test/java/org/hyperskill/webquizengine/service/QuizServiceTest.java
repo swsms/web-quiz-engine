@@ -58,7 +58,7 @@ public class QuizServiceTest {
     public void testSolve_whenSingleCorrectOption() {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
-        quiz.setAnswer(List.of(0));
+        quiz.setAnswer(Set.of(0));
         var id = service.add(quiz).getId();
         var result = service.solve(id, Set.of(0));
         assertTrue(result.isSuccess());
@@ -68,9 +68,19 @@ public class QuizServiceTest {
     public void testSolve_whenSeveralCorrectOptions() {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
-        quiz.setAnswer(List.of(0, 1, 2));
+        quiz.setAnswer(Set.of(0, 1, 2));
         var id = service.add(quiz).getId();
         var result = service.solve(id, Set.of(0, 1, 2));
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testSolve_whenDuplicateCorrectOptions() {
+        var quiz = new Quiz();
+        quiz.setOptions(List.of("a", "b", "c"));
+        quiz.setAnswer(Set.of(0, 1));
+        var id = service.add(quiz).getId();
+        var result = service.solve(id, Set.of(0, 1));
         assertTrue(result.isSuccess());
     }
 
@@ -78,7 +88,7 @@ public class QuizServiceTest {
     public void testSolve_whenSingleIncorrectOption() {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
-        quiz.setAnswer(List.of(2));
+        quiz.setAnswer(Set.of(2));
         var id = service.add(quiz).getId();
         var result = service.solve(id, Set.of(1));
         assertFalse(result.isSuccess());
@@ -88,7 +98,7 @@ public class QuizServiceTest {
     public void testSolve_whenNotAllCorrectOptions() {
         var quiz = new Quiz();
         quiz.setOptions(List.of("a", "b", "c"));
-        quiz.setAnswer(List.of(0, 1, 2));
+        quiz.setAnswer(Set.of(0, 1, 2));
         var id = service.add(quiz).getId();
         var result = service.solve(id, Set.of(0, 1));
         assertFalse(result.isSuccess());

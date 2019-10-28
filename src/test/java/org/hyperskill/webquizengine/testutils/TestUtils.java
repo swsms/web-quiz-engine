@@ -4,6 +4,7 @@ import org.hyperskill.webquizengine.model.Quiz;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +13,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 public final class TestUtils {
+    public static final int DEFAULT_CORRECT_OPTION = 2;
+
     private TestUtils() { }
 
     public static Quiz createJavaLogoQuizWithoutId() {
@@ -24,7 +27,7 @@ public final class TestUtils {
         quiz.setTitle("The Java Logo");
         quiz.setText("What is depicted on the Java logo?");
         quiz.setOptions(List.of("Robot","Tea leaf","Cup of coffee","Bug"));
-        quiz.setAnswer(List.of(2));
+        quiz.setAnswer(Set.of(DEFAULT_CORRECT_OPTION));
         return quiz;
     }
 
@@ -46,5 +49,4 @@ public final class TestUtils {
                 .limit(10)
                 .collect(Collectors.toList());
     }
-
 }
