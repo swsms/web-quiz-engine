@@ -2,6 +2,7 @@ package org.hyperskill.webquizengine.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Lists;
+import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.model.Result;
 import org.hyperskill.webquizengine.service.QuizService;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hyperskill.webquizengine.testutils.TestUtils.*;
@@ -58,7 +61,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void testGetQuiz_whenNonExists() throws Exception {
+    public void testGetQuiz_whenQuizNotFound() throws Exception {
         when(service.findById(anyLong())).thenThrow(QuizNotFoundException.class);
 
         mvc.perform(get(String.format("/quizzes/%d", 1)))
@@ -92,7 +95,8 @@ public class QuizControllerTest {
         when(service.solve(anyLong(), anySet())).thenReturn(Result.success());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
-                .param("answer", String.valueOf(2)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
     }
@@ -102,7 +106,8 @@ public class QuizControllerTest {
         when(service.solve(anyLong(), anySet())).thenReturn(Result.failure());
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
-                .param("answer", String.valueOf(2)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -110,6 +115,16 @@ public class QuizControllerTest {
     @Test
     public void testSolveQuiz_whenNoAnswer() throws Exception {
         mvc.perform(post(String.format("/quizzes/%d/solve", 1)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testSolveQuiz_whenInvalidAnswerOptions() throws Exception {
+        when(service.solve(anyLong(), anySet())).thenThrow(InvalidAnswerOptions.class);
+
+        mvc.perform(post(String.format("/quizzes/%d/solve", 1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Set.of(0, 1))))
                 .andExpect(status().isBadRequest());
     }
 }
