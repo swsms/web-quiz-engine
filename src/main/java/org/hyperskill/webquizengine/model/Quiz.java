@@ -24,7 +24,7 @@ public class Quiz {
     private List<String> options = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private int answer;
+    private List<Integer> answer = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -58,11 +58,11 @@ public class Quiz {
         this.options = options;
     }
 
-    public int getAnswer() {
+    public List<Integer> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(int answer) {
+    public void setAnswer(List<Integer> answer) {
         this.answer = answer;
     }
 

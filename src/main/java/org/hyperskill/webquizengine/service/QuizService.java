@@ -22,7 +22,7 @@ public class QuizService {
         if (quiz == null) {
             throw new QuizNotFoundException();
         }
-        return quiz.getAnswer() == answer ? Result.success() : Result.failure();
+        return quiz.getAnswer().get(0) == answer ? Result.success() : Result.failure();
     }
 
     public Quiz add(Quiz quiz) {
