@@ -1,7 +1,7 @@
 package org.hyperskill.webquizengine.util;
 
-import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.dto.QuizDto;
+import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

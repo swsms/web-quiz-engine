@@ -10,7 +10,7 @@ import java.util.Set;
 import static org.hyperskill.webquizengine.modelng.Option.newOption;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizEntityToDtoWithoutAnswer;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConvertTest {
 
@@ -23,7 +23,8 @@ public class ConvertTest {
         quiz.setOptions(List.of(
                 newOption("a", true),
                 newOption("b", false),
-                newOption("c", true)
+                newOption("c", true),
+                newOption("d", false)
         ));
 
         var quizDto = convertQuizEntityToDtoWithoutAnswer(quiz);
@@ -32,6 +33,9 @@ public class ConvertTest {
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals(quiz.getText(), quizDto.getText());
         assertEquals(quiz.getOptions().size(), quizDto.getOptions().size());
+        for (int i = 0; i < quizDto.getOptions().size(); i++) {
+            assertEquals(quizDto.getOptions().get(i), quiz.getOptions().get(i).getText());
+        }
     }
 
     @Test
@@ -39,8 +43,8 @@ public class ConvertTest {
         var quizDto = new QuizDto();
         quizDto.setTitle("Test title");
         quizDto.setText("Test text");
-        quizDto.setOptions(List.of("a", "b", "c"));
-        quizDto.setAnswer(Set.of(0, 2));
+        quizDto.setOptions(List.of("a", "b", "c", "d", "e"));
+        quizDto.setAnswer(Set.of(0, 1, 4));
 
         var quiz = convertQuizDtoToEntity(quizDto);
 
@@ -48,8 +52,11 @@ public class ConvertTest {
         assertEquals(quizDto.getText(), quiz.getText());
         assertEquals(quizDto.getOptions().size(), quiz.getOptions().size());
 
-        assertTrue(quiz.getOptions().get(0).getCorrect());
-        assertFalse(quiz.getOptions().get(1).getCorrect());
-        assertTrue(quiz.getOptions().get(2).getCorrect());
+        for (int i = 0; i < quiz.getOptions().size(); i++) {
+            var option = quiz.getOptions().get(i);
+            var contains = quizDto.getAnswer().contains(i);
+            assertEquals(contains, option.getCorrect());
+            assertEquals(quizDto.getOptions().get(i), option.getText());
+        }
     }
 }
