@@ -1,50 +1,45 @@
 package org.hyperskill.webquizengine.service;
 
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
-import org.hyperskill.webquizengine.model.Quiz;
-import org.hyperskill.webquizengine.model.Result;
-import org.hyperskill.webquizengine.utils.Utils;
+import org.hyperskill.webquizengine.modelng.Quiz;
+import org.hyperskill.webquizengine.repository.QuizRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import static org.hyperskill.webquizengine.util.Utils.getCorrectOptionsIndexes;
 
 @Service
 public class QuizService {
-    private final ConcurrentMap<Long, Quiz> storage = new ConcurrentHashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong();
+    private final QuizRepository repository;
 
-    public Result solve(long quizId, Set<Integer> answer) {
-        var quiz = storage.get(quizId);
-        if (quiz == null) {
-            throw new QuizNotFoundException();
-        }
-        return Objects.equals(answer, quiz.getAnswer()) ?
-                Result.success() : Result.failure();
+    @Autowired
+    public QuizService(QuizRepository repository) {
+        this.repository = repository;
     }
 
-    public Quiz add(Quiz quiz) {
-        Utils.checkAnswerOptions(quiz);
-        var id = idGenerator.incrementAndGet();
-        quiz.setId(id);
-        storage.putIfAbsent(id, quiz);
-        return quiz;
+    public boolean solve(long quizId, Set<Integer> answer) {
+        var quiz = findById(quizId);
+        var indexes = getCorrectOptionsIndexes(quiz.getOptions());
+        return Objects.equals(answer, indexes);
+    }
+
+    public Long add(Quiz quiz) {
+        return repository.save(quiz).getId();
     }
 
     public Quiz findById(long id) {
-        var quiz = storage.get(id);
-        if (quiz == null) {
-            throw new QuizNotFoundException();
-        }
-        return quiz;
+        var optionalQuiz = repository.findById(id);
+        return optionalQuiz.orElseThrow(QuizNotFoundException::new);
     }
 
     public List<Quiz> findAllSortedById() {
-        var quizzes = new ArrayList<>(storage.values());
-        quizzes.sort(Comparator.comparingLong(Quiz::getId));
+        var quizzes = new ArrayList<Quiz>();
+        repository.findAll().forEach(quizzes::add);
         return quizzes;
     }
-
 }

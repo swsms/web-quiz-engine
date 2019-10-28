@@ -1,4 +1,4 @@
-package org.hyperskill.webquizengine.model;
+package org.hyperskill.webquizengine.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Quiz {
+public class QuizDto {
 
     private Long id;
 

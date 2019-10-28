@@ -1,8 +1,9 @@
 package org.hyperskill.webquizengine.controller;
 
-import org.hyperskill.webquizengine.model.Quiz;
-import org.hyperskill.webquizengine.model.Result;
+import org.hyperskill.webquizengine.dto.QuizDto;
+import org.hyperskill.webquizengine.dto.ResultDto;
 import org.hyperskill.webquizengine.service.QuizService;
+import org.hyperskill.webquizengine.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.hyperskill.webquizengine.util.Utils.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -26,24 +29,31 @@ public class QuizController {
     }
 
     @PostMapping(path = "/{id}/solve", produces = APPLICATION_JSON_VALUE)
-    public Result solveQuiz(@PathVariable long id,
-                            @RequestBody Set<Integer> answer) {
-        return service.solve(id, answer);
+    public ResultDto solveQuiz(@PathVariable long id,
+                               @RequestBody Set<Integer> answer) {
+        logger.info("Solving a quiz {} with answer {}", id, answer);
+        return service.solve(id, answer) ? ResultDto.success() : ResultDto.failure();
     }
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public Quiz createQuiz(@Valid @RequestBody Quiz quiz) {
-        logger.info("Creating a quiz: {}", quiz);
-        return service.add(quiz);
+    public QuizDto createQuiz(@Valid @RequestBody QuizDto quizDto) {
+        logger.info("Creating a quiz: {}", quizDto);
+        checkAnswerOptions(quizDto);
+        var quiz = convertQuizDtoToEntity(quizDto);
+        var id = service.add(quiz);
+        quizDto.setId(id);
+        return quizDto;
     }
 
     @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
-    public Quiz getQuiz(@PathVariable long id) {
-        return service.findById(id);
+    public QuizDto getQuiz(@PathVariable long id) {
+        return convertQuizEntityToDtoWithoutAnswer(service.findById(id));
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<Quiz> getQuizList() {
-        return service.findAllSortedById();
+    public List<QuizDto> getQuizList() {
+        return service.findAllSortedById().stream()
+                .map(Utils::convertQuizEntityToDtoWithoutAnswer)
+                .collect(Collectors.toList());
     }
 }
