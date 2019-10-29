@@ -1,8 +1,10 @@
 package org.hyperskill.webquizengine.service;
 
+import org.hyperskill.webquizengine.exception.DuplicateEmailException;
 import org.hyperskill.webquizengine.model.User;
 import org.hyperskill.webquizengine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,8 +29,13 @@ public class UserService implements UserDetailsService {
     }
 
     public Long registerNewUser(String username, String password) {
-        var encodedPassword = encoder.encode(password);
-        var user = new User(username, encodedPassword);
-        return userRepository.save(user).getId();
+        try {
+            var encodedPassword = encoder.encode(password);
+            var user = new User(username, encodedPassword);
+            return userRepository.save(user).getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateEmailException();
+        }
     }
 }
+
