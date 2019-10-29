@@ -23,8 +23,7 @@ import static org.hyperskill.webquizengine.testutils.TestUtils.*;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -206,6 +205,19 @@ public class QuizControllerTest {
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Set.of(0, 1))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
+    public void testDeleteQuiz_whenSuccessful() throws Exception {
+        mvc.perform(delete(String.format("/quizzes/%d", 1)))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void testDeleteQuiz_whenUnauthorized() throws Exception {
+        mvc.perform(delete(String.format("/quizzes/%d", 1)))
                 .andExpect(status().isUnauthorized());
     }
 }
