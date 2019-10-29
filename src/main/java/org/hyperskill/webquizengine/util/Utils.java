@@ -1,7 +1,9 @@
 package org.hyperskill.webquizengine.util;
 
+import org.hyperskill.webquizengine.dto.CompletionDto;
 import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.dto.QuizDto;
+import org.hyperskill.webquizengine.model.Completion;
 import org.hyperskill.webquizengine.model.Option;
 import org.hyperskill.webquizengine.model.Quiz;
 
@@ -63,5 +65,13 @@ public final class Utils {
             }
         }
         return indexes;
+    }
+
+    public static CompletionDto convertCompletionEntityToDto(Completion completion) {
+        var completionDto = new CompletionDto();
+        completionDto.setQuizId(completion.getQuiz().getId());
+        completionDto.setQuizTitle(completion.getQuiz().getTitle());
+        completionDto.setCompletedAt(completion.getCompletedAt());
+        return completionDto;
     }
 }

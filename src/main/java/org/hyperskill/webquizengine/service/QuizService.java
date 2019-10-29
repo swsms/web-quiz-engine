@@ -4,17 +4,20 @@ import org.hyperskill.webquizengine.dto.QuizDto;
 import org.hyperskill.webquizengine.exception.NotPermittedException;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.exception.UserNotFoundException;
+import org.hyperskill.webquizengine.model.Completion;
 import org.hyperskill.webquizengine.model.Quiz;
+import org.hyperskill.webquizengine.repository.CompletionRepository;
 import org.hyperskill.webquizengine.repository.QuizRepository;
 import org.hyperskill.webquizengine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static org.hyperskill.webquizengine.model.Completion.createCompletion;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.hyperskill.webquizengine.util.Utils.getCorrectOptionsIndexes;
 
@@ -22,17 +25,30 @@ import static org.hyperskill.webquizengine.util.Utils.getCorrectOptionsIndexes;
 public class QuizService {
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
+    private final CompletionRepository completionRepository;
 
     @Autowired
-    public QuizService(QuizRepository quizRepository, UserRepository userRepository) {
+    public QuizService(QuizRepository quizRepository,
+                       UserRepository userRepository,
+                       CompletionRepository completionRepository) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
+        this.completionRepository = completionRepository;
     }
 
-    public boolean solve(long quizId, Set<Integer> answer) {
+    public boolean solve(long quizId, Set<Integer> answer, String username) {
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+
         var quiz = findById(quizId);
         var indexes = getCorrectOptionsIndexes(quiz.getOptions());
-        return Objects.equals(answer, indexes);
+
+        boolean correct = Objects.equals(answer, indexes);
+        if (correct) {
+            completionRepository.save(createCompletion(user, quiz));
+        }
+
+        return correct;
     }
 
     public Long create(QuizDto quizDto, String username) {
@@ -50,12 +66,6 @@ public class QuizService {
         return optionalQuiz.orElseThrow(QuizNotFoundException::new);
     }
 
-    public List<Quiz> findAllSortedById() {
-        var quizzes = new ArrayList<Quiz>();
-        quizRepository.findAll().forEach(quizzes::add);
-        return quizzes;
-    }
-
     public void delete(long quizId, String username) {
         var quiz = findById(quizId);
         var user = userRepository.findByUsername(username)
@@ -65,5 +75,13 @@ public class QuizService {
         } else {
             throw new NotPermittedException();
         }
+    }
+
+    public Page<Quiz> findAllAsPage(Pageable pageable) {
+        return quizRepository.findAll(pageable);
+    }
+
+    public Page<Completion> findAllCompletedQuizzesAsPage(String username, Pageable pageable) {
+        return completionRepository.findAllByUserOrderByCompletedAtDesc(username, pageable);
     }
 }

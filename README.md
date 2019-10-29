@@ -96,28 +96,35 @@ The response does not contain `answer`:
 
 If the quiz does not exist, the server returns `HTTP 404`.
 
-### Get all quizzes
+### Get all quizzes (with paging)
 
-To get all existing quizzes, you need to make a request without any params:
+The number of stored quizzes can be very large. 
+In this regard, obtaining all quizzes is performed page by page: 10 quizzes at once.
+Here is an example"
 
 ```
 curl --user test@gmail.com:secret -X GET http://localhost:8888/api/quizzes
 ```
 
-The response contains a JSON array of quizzes:
+The response contains a JSON with quizzes (inside `content`) and some additional metadata:
 
 ```json
-[{"id":1,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]},
-{"id":2,"title":"The Ultimate Question","text":"What is the answer to the Ultimate Question of Life, the Universe and Everything?","options":["Everything goes right","42","2+2=4","11011100"]}]
+{
+"totalPages":1, "totalElements":3, "last":true, "first":true, "sort":{ }, "number":0, 
+"numberOfElements":3, "size":10, "empty":false, "pageable": { },
+"content":[
+  {"id":102,"title":"Test 1","text":"Text 1","options":["a","b","c"]},
+  {"id":103,"title":"Test 2","text":"Text 2","options":["a", "b", "c", "d"]},
+  {"id":202,"title":"The Java Logo","text":"What is depicted on the Java logo?","options":["Robot","Tea leaf","Cup of coffee","Bug"]}]
+}
 ```
 
-If there is no quizzes, it returns an empty JSON array:
+We can pass the `page` param to navigate through pages `/api/quizzes?page=1`. 
+Pages start from 0 (the first page).
 
-```json
-[]
-```
+If there is no quizzes, `content` is empty.
 
-In both cases, the status code is `HTTP 200 (OK)`.
+In all cases, the status code is `HTTP 200 (OK)`.
 
 ### Solving a quiz
 
@@ -148,6 +155,32 @@ The result is determined by the value of the boolean `success` key in the respon
 ```
 
 - If the specified quiz does not exist, the server returns `HTTP 404`.
+
+### Get all completions of quizzes (with paging)
+
+The API provides an operation to get all completions of quizzes for a user.
+A response is separated by pages, since the service may return a lot of data.
+
+```
+curl --user test@gmail.com:secret -X GET  http://localhost:8888/api/quizzes/completed
+```
+
+The response contains a JSON with quizzes (inside `content`) and some additional metadata:
+
+```json
+{"content":[
+  {"quizId":103,"quizTitle":"Test 3","completedAt":"2019-10-29T21:13:53.779542"},
+  {"quizId":102,"quizTitle":"Test 2","completedAt":"2019-10-29T21:13:52.324993"},
+  {"quizId":101,"quizTitle":"Test 1","completedAt":"2019-10-29T18:59:58.387267"},
+  {"quizId":101,"quizTitle":"Test 1","completedAt":"2019-10-29T18:59:55.303268"},
+  {"quizId":202,"quizTitle":"The Java Logo","completedAt":"2019-10-29T18:59:54.033801"}],
+  "totalPages":1,"totalElements":5,"last":true,"first":true, "empty":false}
+```
+
+Since it is allowed to solve a quiz multiple times, the response may contain duplicate quizzes, 
+but with different completion date.
+
+We removed some metadata keys from the response to keep it more simple to understand.
 
 ### Deleting a quiz
 
