@@ -7,6 +7,7 @@ import org.hyperskill.webquizengine.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,7 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hyperskill.webquizengine.util.Utils.*;
+import static org.hyperskill.webquizengine.util.Utils.checkAnswerOptions;
+import static org.hyperskill.webquizengine.util.Utils.convertQuizEntityToDtoWithoutAnswer;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -39,7 +41,7 @@ public class QuizController {
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public QuizDto createQuiz(@Valid @RequestBody QuizDto quizDto,
                               @Autowired Principal principal) {
-        logger.info("Creating a quiz: {}", quizDto);
+        logger.info("User {} wants to create a quiz {}", principal.getName(), quizDto);
         checkAnswerOptions(quizDto);
         var id = service.create(quizDto, principal.getName());
         quizDto.setId(id);
@@ -56,5 +58,13 @@ public class QuizController {
         return service.findAllSortedById().stream()
                 .map(Utils::convertQuizEntityToDtoWithoutAnswer)
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteQuiz(@PathVariable long id,
+                           @Autowired Principal principal) {
+        logger.info("User {} wants to delete a quiz with id {}", principal.getName(), id);
+        service.delete(id, principal.getName());
     }
 }

@@ -1,6 +1,7 @@
 package org.hyperskill.webquizengine.service;
 
 import org.hyperskill.webquizengine.dto.QuizDto;
+import org.hyperskill.webquizengine.exception.NotPermittedException;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.exception.UserNotFoundException;
 import org.hyperskill.webquizengine.model.Quiz;
@@ -9,7 +10,6 @@ import org.hyperskill.webquizengine.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -54,5 +54,16 @@ public class QuizService {
         var quizzes = new ArrayList<Quiz>();
         quizRepository.findAll().forEach(quizzes::add);
         return quizzes;
+    }
+
+    public void delete(long quizId, String username) {
+        var quiz = findById(quizId);
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+        if (Objects.equals(quiz.getCreatedBy().getId(), user.getId())) {
+            quizRepository.delete(quiz);
+        } else {
+            throw new NotPermittedException();
+        }
     }
 }

@@ -17,7 +17,7 @@ public class Quiz {
     @Column(nullable = false)
     private String text;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "quiz_id", nullable = false)
     @OrderBy("position")
     private List<Option> options = new ArrayList<>();
