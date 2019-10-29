@@ -24,10 +24,8 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register", consumes = APPLICATION_JSON_VALUE)
-    public UserDto register(@Valid @RequestBody UserDto userDto) {
+    public void register(@Valid @RequestBody UserDto userDto) {
         logger.info("A new user '{}' wants to register", userDto.getEmail());
-        Long id = service.registerNewUser(userDto.getEmail(), userDto.getPassword());
-        userDto.setId(id);
-        return userDto;
+        service.registerNewUser(userDto.getEmail(), userDto.getPassword());
     }
 }
