@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public final class TestUtils {
     public static final int DEFAULT_CORRECT_OPTION = 2;
+    public static final String DEFAULT_USERNAME = "test@gmail.com";
 
     private TestUtils() { }
 
@@ -54,7 +55,8 @@ public final class TestUtils {
 
     public static User createTestUserWithDefaultName() {
         var user = new User();
-        user.setUsername("test@gmail.com");
+        user.setUsername(DEFAULT_USERNAME);
+        user.setId(100L);
         return user;
     }
 
