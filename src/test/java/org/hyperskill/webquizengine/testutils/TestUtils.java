@@ -2,6 +2,7 @@ package org.hyperskill.webquizengine.testutils;
 
 import org.hyperskill.webquizengine.dto.QuizDto;
 import org.hyperskill.webquizengine.model.Quiz;
+import org.hyperskill.webquizengine.model.User;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
@@ -49,5 +50,17 @@ public final class TestUtils {
         return Stream.generate(Quiz::new)
                 .limit(10)
                 .collect(Collectors.toList());
+    }
+
+    public static User createTestUserWithDefaultName() {
+        var user = new User();
+        user.setUsername("test@gmail.com");
+        return user;
+    }
+
+    public static Quiz createQuizEntityWithId(long id) {
+        var quiz = new Quiz();
+        quiz.setId(id);
+        return quiz;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,11 +37,11 @@ public class QuizController {
     }
 
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public QuizDto createQuiz(@Valid @RequestBody QuizDto quizDto) {
+    public QuizDto createQuiz(@Valid @RequestBody QuizDto quizDto,
+                              @Autowired Principal principal) {
         logger.info("Creating a quiz: {}", quizDto);
         checkAnswerOptions(quizDto);
-        var quiz = convertQuizDtoToEntity(quizDto);
-        var id = service.add(quiz);
+        var id = service.create(quizDto, principal.getName());
         quizDto.setId(id);
         return quizDto;
     }
