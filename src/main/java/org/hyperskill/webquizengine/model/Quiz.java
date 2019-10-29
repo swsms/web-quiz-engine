@@ -17,10 +17,14 @@ public class Quiz {
     @Column(nullable = false)
     private String text;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "quiz_id", nullable = false)
     @OrderBy("position")
     private List<Option> options = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User createdBy;
 
     public Long getId() {
         return id;
@@ -52,6 +56,14 @@ public class Quiz {
 
     public void setOptions(List<Option> options) {
         this.options = options;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override
