@@ -28,9 +28,6 @@ public class QuizController {
     private final QuizService service;
 
     @Autowired
-    private QuizRepository quizRepository;
-
-    @Autowired
     public QuizController(QuizService service) {
         this.service = service;
     }
@@ -67,7 +64,7 @@ public class QuizController {
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public Page<QuizDto> getQuizPage(Pageable pageable) {
-        return quizRepository.findAll(pageable)
+        return service.findAllAsPage(pageable)
                 .map(Utils::convertQuizEntityToDtoWithoutAnswer);
     }
 }
