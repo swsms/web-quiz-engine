@@ -180,13 +180,15 @@ curl --user test@gmail.com:secret -X GET  http://localhost:8888/api/quizzes/comp
 The response contains a JSON with quizzes (inside `content`) and some additional metadata:
 
 ```json
-{"content":[
+{
+"totalPages":1,"totalElements":5,"last":true,"first":true, "empty":false,
+"content":[
   {"quizId":103,"quizTitle":"Test 3","completedAt":"2019-10-29T21:13:53.779542"},
   {"quizId":102,"quizTitle":"Test 2","completedAt":"2019-10-29T21:13:52.324993"},
   {"quizId":101,"quizTitle":"Test 1","completedAt":"2019-10-29T18:59:58.387267"},
   {"quizId":101,"quizTitle":"Test 1","completedAt":"2019-10-29T18:59:55.303268"},
-  {"quizId":202,"quizTitle":"The Java Logo","completedAt":"2019-10-29T18:59:54.033801"}],
-  "totalPages":1,"totalElements":5,"last":true,"first":true, "empty":false}
+  {"quizId":202,"quizTitle":"The Java Logo","completedAt":"2019-10-29T18:59:54.033801"}]
+}
 ```
 
 Since it is allowed to solve a quiz multiple times, the response may contain duplicate quizzes, 
