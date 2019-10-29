@@ -35,6 +35,8 @@ Otherwise, the service returns the `HTTP 401 (Unauthorized)` code.
 
 The following are examples of all supported requests and responses using `curl`.
 
+---
+
 ### Register a new user
 
 To register a new user, you need to send a JSON with `email` and `password` via `POST` request.
@@ -56,6 +58,8 @@ Here are some additional restrictions to the format of user credentials:
 If any of them are not satisfied, the service will also return `HTTP 400`.
 
 All the following operations needs a registered user to be successfully completed.
+
+---
 
 ### Create a new quiz
 
@@ -81,6 +85,8 @@ The response contains the same JSON with generated `id`, but does not include `a
 If the request JSON does not contain `title` or `text`, or they are empty strings (`""`), then the response is `404`.
 If the number of options in the quiz is less than 2, the response is `404` as well.
 
+---
+
 ### Get a quiz
 
 To get an info about a quiz, you need to specify its `id` in url.
@@ -95,6 +101,8 @@ The response does not contain `answer`:
 ```
 
 If the quiz does not exist, the server returns `HTTP 404`.
+
+---
 
 ### Get all quizzes (with paging)
 
@@ -126,6 +134,8 @@ If there is no quizzes, `content` is empty.
 
 In all cases, the status code is `HTTP 200 (OK)`.
 
+---
+
 ### Solving a quiz
 
 To solve a quiz, you need to pass an answer JSON-array with option indexes via `POST` request.
@@ -156,6 +166,8 @@ The result is determined by the value of the boolean `success` key in the respon
 
 - If the specified quiz does not exist, the server returns `HTTP 404`.
 
+---
+
 ### Get all completions of quizzes (with paging)
 
 The API provides an operation to get all completions of quizzes for a user.
@@ -181,6 +193,8 @@ Since it is allowed to solve a quiz multiple times, the response may contain dup
 but with different completion date.
 
 We removed some metadata keys from the response to keep it more simple to understand.
+
+---
 
 ### Deleting a quiz
 
