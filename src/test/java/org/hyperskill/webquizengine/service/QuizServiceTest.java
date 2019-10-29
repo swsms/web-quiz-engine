@@ -5,6 +5,7 @@ import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.exception.UserNotFoundException;
 import org.hyperskill.webquizengine.model.Quiz;
 import org.hyperskill.webquizengine.model.User;
+import org.hyperskill.webquizengine.repository.CompletionRepository;
 import org.hyperskill.webquizengine.repository.QuizRepository;
 import org.hyperskill.webquizengine.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +37,12 @@ public class QuizServiceTest {
     @MockBean
     private UserRepository userRepository;
 
+    @MockBean
+    private CompletionRepository completionRepository;
+
     @BeforeEach
     void init() {
-        service = new QuizService(quizRepository, userRepository);
+        service = new QuizService(quizRepository, userRepository, completionRepository);
     }
 
     @Test
@@ -98,6 +102,7 @@ public class QuizServiceTest {
 
     @Test
     public void testSolve_whenSingleCorrectOption() {
+        var user = createTestUserWithDefaultName();
         var quiz = new Quiz();
         quiz.setOptions(List.of(
                 newOption("a", true),
@@ -106,12 +111,14 @@ public class QuizServiceTest {
         ));
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        assertTrue(service.solve(1L, Set.of(0)));
+        assertTrue(service.solve(1L, Set.of(0), user.getUsername()));
     }
 
     @Test
     public void testSolve_whenSeveralCorrectOptions() {
+        var user = createTestUserWithDefaultName();
         var quiz = new Quiz();
         quiz.setOptions(List.of(
                 newOption("a", true),
@@ -122,13 +129,15 @@ public class QuizServiceTest {
         ));
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        assertTrue(service.solve(1L, Set.of(0, 3, 4)));
+        assertTrue(service.solve(1L, Set.of(0, 3, 4), user.getUsername()));
     }
 
 
     @Test
     public void testSolve_whenSingleIncorrectOption() {
+        var user = createTestUserWithDefaultName();
         var quiz = new Quiz();
         quiz.setOptions(List.of(
                 newOption("a", true),
@@ -137,12 +146,14 @@ public class QuizServiceTest {
         ));
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        assertFalse(service.solve(1L, Set.of(2)));
+        assertFalse(service.solve(1L, Set.of(2), user.getUsername()));
     }
 
     @Test
     public void testSolve_whenNotAllCorrectOptions() {
+        var user = createTestUserWithDefaultName();
         var quiz = new Quiz();
         quiz.setOptions(List.of(
                 newOption("a", true),
@@ -153,14 +164,20 @@ public class QuizServiceTest {
         ));
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        assertFalse(service.solve(1L, Set.of(0, 3, 2)));
+        assertFalse(service.solve(1L, Set.of(0, 3, 2), user.getUsername()));
     }
 
     @Test
     public void testSolve_whenQuizNotFound() {
+        var user = createTestUserWithDefaultName();
+
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenThrow(QuizNotFoundException.class);
-        assertThrows(QuizNotFoundException.class, () -> service.solve(2, Set.of(1)));
+
+        assertThrows(QuizNotFoundException.class,
+                () -> service.solve(2, Set.of(1), DEFAULT_USERNAME));
     }
 
     @Test

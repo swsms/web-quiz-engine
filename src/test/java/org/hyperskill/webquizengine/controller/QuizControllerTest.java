@@ -1,7 +1,6 @@
 package org.hyperskill.webquizengine.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.util.Lists;
 import org.hyperskill.webquizengine.exception.InvalidAnswerOptions;
 import org.hyperskill.webquizengine.exception.QuizNotFoundException;
 import org.hyperskill.webquizengine.service.QuizService;
@@ -10,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -135,32 +136,46 @@ public class QuizControllerTest {
 
     @Test
     @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
-    public void testGetQuizList_whenManyQuizzes() throws Exception {
-        var quizzes = createTestQuizzes(10);
+    void testGetQuizList_evaluatesPageableParameter() throws Exception {
+        var quizzes = createTestQuizzes(15);
 
-        when(quizService.findAllSortedById()).thenReturn(quizzes);
+        when(quizService.findAllAsPage(any())).thenReturn(new PageImpl<>(quizzes));
+
+        mvc.perform(get("/quizzes")
+                .param("page", "5")
+                .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
+    public void testGetQuizList_whenManyQuizzes() throws Exception {
+        var quizzes = createTestQuizzes(15);
+
+        when(quizService.findAllAsPage(any())).thenReturn(new PageImpl<>(quizzes));
 
         mvc.perform(get("/quizzes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(quizzes.size())));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(quizzes.size())));
     }
 
     @Test
     @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
     public void testGetQuizList_whenNoQuizzes() throws Exception {
-        when(quizService.findAllSortedById()).thenReturn(Lists.emptyList());
+        when(quizService.findAllAsPage(any())).thenReturn(new PageImpl<>(List.of()));
 
         mvc.perform(get("/quizzes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @Test
     @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        when(quizService.solve(anyLong(), anySet())).thenReturn(true);
+        when(quizService.solve(anyLong(), anySet(), anyString())).thenReturn(true);
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -172,7 +187,7 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        when(quizService.solve(anyLong(), anySet())).thenReturn(false);
+        when(quizService.solve(anyLong(), anySet(), anyString())).thenReturn(false);
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +206,7 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = DEFAULT_USERNAME, password = DEFAULT_PASSWORD)
     public void testSolveQuiz_whenInvalidAnswerOptions() throws Exception {
-        when(quizService.solve(anyLong(), anySet()))
+        when(quizService.solve(anyLong(), anySet(), anyString()))
                 .thenThrow(InvalidAnswerOptions.class);
 
         mvc.perform(post(String.format("/quizzes/%d/solve", 1))

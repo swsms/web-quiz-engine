@@ -14,12 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.hyperskill.webquizengine.model.Completion.*;
+import static org.hyperskill.webquizengine.model.Completion.createCompletion;
 import static org.hyperskill.webquizengine.util.Utils.convertQuizDtoToEntity;
 import static org.hyperskill.webquizengine.util.Utils.getCorrectOptionsIndexes;
 
@@ -66,12 +64,6 @@ public class QuizService {
     public Quiz findById(long id) {
         var optionalQuiz = quizRepository.findById(id);
         return optionalQuiz.orElseThrow(QuizNotFoundException::new);
-    }
-
-    public List<Quiz> findAllSortedById() {
-        var quizzes = new ArrayList<Quiz>();
-        quizRepository.findAll().forEach(quizzes::add);
-        return quizzes;
     }
 
     public void delete(long quizId, String username) {
