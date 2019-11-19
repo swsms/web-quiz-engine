@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/quizzes")
+@RequestMapping(path = "/quiz")
 public class QuizController {
     private final Logger logger = LoggerFactory.getLogger(QuizController.class);
     private final static Quiz quiz;

@@ -31,7 +31,7 @@ The following are examples of all supported requests and responses using `curl`.
 
 Here is an example how to request the hardcoded quiz.
 ```
-curl -v -X GET http://localhost:8888/api/quizzes/1
+curl http://localhost:8888/api/quiz
 ```
 
 The response looks like the following:
@@ -48,7 +48,7 @@ The result is determined by the value of the boolean `success` key in the respon
 
 Here is an example with `curl`:
 ```
-curl -X POST http://localhost:8888/api/quizzes?answer=2
+curl -X POST http://localhost:8888/api/quiz?answer=2
 ```
 
 - if the answer is correct:
