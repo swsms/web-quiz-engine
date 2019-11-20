@@ -39,7 +39,7 @@ To create a new quiz, you need to send a JSON via `POST` request with the follow
 An example of the request:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "text":"What is depicted on the Java logo?", "options": ["Robot", "Tea leaf", "Cup of coffee", "Bug"], "answer": 2}' http://localhost:8888/api/quizzes
+curl -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "text":"What is depicted on the Java logo?", "options": ["Robot", "Tea leaf", "Cup of coffee", "Bug"], "answer": [2]}' http://localhost:8888/api/quizzes
 ```
 
 The response contains the same JSON with generated `id`.
@@ -48,8 +48,8 @@ The response contains the same JSON with generated `id`.
 ```
 It does not include `answer`.
 
-If the request JSON does not contain `title` or `text`, or they are empty strings (`""`), then the response is `404`.
-If the number of options in the quiz is less than 2, the response is `404` as well.
+If the request JSON does not contain `title` or `text`, or they are empty strings (`""`), then the response is `400`.
+If the number of options in the quiz is less than 2, the response is `400` as well.
 
 ### Get a quiz
 
@@ -116,5 +116,3 @@ The result is determined by the value of the boolean `success` key in the respon
 ```
 
 - If the specified quiz does not exist, the server returns `HTTP 404`.
-
-
