@@ -25,7 +25,7 @@ public class QuizControllerTest {
 
     @Test
     public void testGetFakeQuiz() throws Exception {
-        var mvcResult = mvc.perform(get("/quizzes")
+        var mvcResult = mvc.perform(get("/quiz")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -41,7 +41,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenCorrectAnswer() throws Exception {
-        var mvcResult = mvc.perform(post("/quizzes")
+        var mvcResult = mvc.perform(post("/quiz")
                 .param("answer", "2"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -54,7 +54,7 @@ public class QuizControllerTest {
 
     @Test
     public void testSolveQuiz_whenIncorrectAnswer() throws Exception {
-        var mvcResult = mvc.perform(post("/quizzes")
+        var mvcResult = mvc.perform(post("/quiz")
                 .param("answer", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
